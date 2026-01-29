@@ -19,7 +19,10 @@ import {
   Car,
   PenTool,
   Home,
-  FileCheck
+  FileCheck,
+  MessageCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 // Inyectamos la fuente Open Sans
@@ -465,36 +468,58 @@ const WhyUs = () => {
   );
 };
 
-// Componente de Contacto (FONDO GRIS CLARO - Variación)
+// Componente de Contacto (Wizard Form - Mejorada UX)
 const Contact = () => {
-  const [formStatus, setFormStatus] = useState('idle');
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    service: '',
+    name: '',
+    phone: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e) => {
+  const updateData = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const nextStep = () => setStep(prev => prev + 1);
+  const prevStep = () => setStep(prev => prev - 1);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormStatus('sending');
-    setTimeout(() => {
-      setFormStatus('success');
-      e.target.reset();
-    }, 1500);
+    setIsSubmitting(true);
+    // Simulación de envío
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsSubmitting(false);
+    setIsSuccess(true);
+  };
+
+  const wizardVariants = {
+    hidden: { opacity: 0, x: 20 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+    exit: { opacity: 0, x: -20, transition: { duration: 0.3 } }
   };
 
   return (
-    <section id="contacto" className="py-24 bg-slate-50 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="contacto" className="py-24 bg-slate-50 relative min-h-[800px] flex items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
         >
 
-          {/* Info Column (Texto oscuro sobre fondo claro) */}
-          <motion.div variants={fadeInUp} className="text-slate-900">
+          {/* Info Column */}
+          <motion.div variants={fadeInUp} className="text-slate-900 order-2 lg:order-1">
             <h2 className="text-slate-500 font-bold tracking-[0.2em] uppercase text-xs mb-2">Contacto</h2>
             <h3 className="text-4xl font-bold mb-6 text-slate-900 uppercase">Inicie su Trámite</h3>
             <p className="text-slate-600 mb-10 text-lg leading-relaxed font-light">
-              Estamos listos para asistirle. Complete el formulario o contáctenos directamente.
+              Hemos simplificado el proceso para usted. Complete los pasos y nos pondremos en contacto a la brevedad posible.
             </p>
 
             <div className="space-y-8">
@@ -505,7 +530,6 @@ const Contact = () => {
                   <p className="text-xl font-medium text-slate-900 break-all">abg.jesusadiaz@gmail.com</p>
                 </div>
               </div>
-
               <div className="flex items-start">
                 <MapPin className="w-6 h-6 text-slate-900 mr-4 mt-1" />
                 <div>
@@ -516,56 +540,141 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          {/* Form Column - Tarjeta Blanca con Sombra */}
-          <motion.div variants={fadeInUp} className="bg-white p-8 rounded-sm shadow-xl border border-slate-100">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre</label>
-                  <input type="text" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-sm focus:outline-none focus:border-slate-900 text-slate-900 placeholder-slate-400 transition-colors" placeholder="Su nombre" />
+          {/* Wizard Form Column */}
+          <motion.div variants={fadeInUp} className="bg-white p-8 md:p-12 rounded-2xl shadow-2xl border border-slate-100 order-1 lg:order-2 h-[550px] flex flex-col justify-center relative overflow-hidden">
+
+            {!isSuccess ? (
+              <>
+                {/* Progress Bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-slate-100">
+                  <motion.div
+                    className="h-full bg-slate-900"
+                    initial={{ width: "0%" }}
+                    animate={{ width: `${(step / 3) * 100}%` }}
+                    transition={{ duration: 0.5 }}
+                  />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Teléfono</label>
-                  <input type="tel" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-sm focus:outline-none focus:border-slate-900 text-slate-900 placeholder-slate-400 transition-colors" placeholder="Su teléfono" />
+
+                <div className="mb-8 flex justify-between items-end">
+                  <span className="text-4xl font-bold text-slate-200">0{step}</span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    {step === 1 ? 'Servicio' : step === 2 ? 'Datos' : 'Mensaje'}
+                  </span>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Correo</label>
-                <input type="email" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-sm focus:outline-none focus:border-slate-900 text-slate-900 placeholder-slate-400 transition-colors" placeholder="su@correo.com" />
-              </div>
+                <AnimatePresence mode="wait">
+                  {step === 1 && (
+                    <motion.div key="step1" variants={wizardVariants} initial="hidden" animate="visible" exit="exit" className="space-y-4">
+                      <h4 className="text-xl font-bold text-slate-900 mb-6">¿Qué trámite necesita realizar?</h4>
+                      <div className="grid grid-cols-1 gap-3">
+                        {['Carta Consular', 'Poderes', 'Contratos', 'Registro de Marcas', 'Otro'].map((item) => (
+                          <button
+                            key={item}
+                            onClick={() => { updateData('service', item); nextStep(); }}
+                            className="w-full text-left px-6 py-4 rounded-xl border border-slate-200 text-slate-600 transition-all text-sm font-medium flex justify-between items-center group hover:border-slate-900 hover:bg-slate-900 hover:text-white hover:shadow-lg"
+                          >
+                            {item}
+                            <ChevronRight className="w-4 h-4 transition-transform opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0" />
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Trámite</label>
-                <select className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-sm focus:outline-none focus:border-slate-900 text-slate-900 transition-colors">
-                  <option>Seleccione una opción</option>
-                  <option>Antecedentes Penales</option>
-                  <option>Carta Consular</option>
-                  <option>Licencia de Conducir</option>
-                  <option>Poder</option>
-                  <option>Contratos</option>
-                  <option>Otros</option>
-                </select>
-              </div>
+                  {step === 2 && (
+                    <motion.div key="step2" variants={wizardVariants} initial="hidden" animate="visible" exit="exit" className="space-y-6">
+                      <h4 className="text-xl font-bold text-slate-900 mb-6">Sus datos de contacto</h4>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre Completo</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => updateData('name', e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all text-slate-900"
+                          placeholder="Ej: Juan Pérez"
+                          autoFocus
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Teléfono / WhatsApp</label>
+                        <input
+                          type="tel"
+                          value={formData.phone}
+                          onChange={(e) => updateData('phone', e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all text-slate-900"
+                          placeholder="+58 414 1234567"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Correo Electrónico</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => updateData('email', e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all text-slate-900"
+                          placeholder="juan@ejemplo.com"
+                        />
+                      </div>
+                      <div className="flex justify-between pt-4">
+                        <button onClick={prevStep} className="text-slate-500 hover:text-slate-900 font-bold text-sm flex items-center px-4 py-2"><ChevronLeft className="w-4 h-4 mr-1" /> Atrás</button>
+                        <button
+                          onClick={nextStep}
+                          disabled={!formData.name || !formData.phone}
+                          className="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center transition-all"
+                        >
+                          Siguiente <ChevronRight className="w-4 h-4 ml-1" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
 
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mensaje</label>
-                <textarea rows="4" required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-sm focus:outline-none focus:border-slate-900 text-slate-900 placeholder-slate-400 transition-colors" placeholder="¿En qué podemos ayudarle?"></textarea>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                disabled={formStatus === 'sending' || formStatus === 'success'}
-                className={`w-full py-4 rounded-sm font-bold text-sm uppercase tracking-widest transition-all ${formStatus === 'success'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-slate-900 text-white hover:bg-slate-800'
-                  }`}
+                  {step === 3 && (
+                    <motion.div key="step3" variants={wizardVariants} initial="hidden" animate="visible" exit="exit" className="space-y-6">
+                      <h4 className="text-xl font-bold text-slate-900 mb-6">Detalles finales</h4>
+                      <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Mensaje o Consulta (Opcional)</label>
+                        <textarea
+                          rows="4"
+                          value={formData.message}
+                          onChange={(e) => updateData('message', e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-all resize-none text-slate-900"
+                          placeholder="Describa brevemente su caso..."
+                          autoFocus
+                        ></textarea>
+                      </div>
+                      <div className="flex justify-between pt-4 items-center">
+                        <button onClick={prevStep} className="text-slate-500 hover:text-slate-900 font-bold text-sm flex items-center px-4 py-2"><ChevronLeft className="w-4 h-4 mr-1" /> Atrás</button>
+                        <button
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className="bg-slate-900 text-white px-8 py-3 rounded-lg font-bold text-sm shadow-xl hover:bg-slate-800 disabled:opacity-70 flex items-center min-w-[140px] justify-center transition-all"
+                        >
+                          {isSubmitting ? <span className="animate-pulse">Enviando...</span> : 'ENVIAR SOLICITUD'}
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="text-center py-12"
               >
-                {formStatus === 'sending' ? 'ENVIANDO...' : formStatus === 'success' ? '¡ENVIADO!' : 'ENVIAR SOLICITUD'}
-              </motion.button>
-            </form>
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle className="w-10 h-10 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">¡Solicitud Enviada!</h3>
+                <p className="text-slate-600 mb-8 max-w-xs mx-auto">Hemos recibido sus datos correctamente. El Abogado Jesús Díaz le contactará en breve.</p>
+                <button
+                  onClick={() => { setIsSuccess(false); setStep(1); setFormData({ service: '', name: '', phone: '', email: '', message: '' }); }}
+                  className="text-slate-500 hover:text-slate-900 font-bold text-sm border-b border-transparent hover:border-slate-900 transition-all pb-1"
+                >
+                  Enviar otra solicitud
+                </button>
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       </div>
@@ -604,6 +713,22 @@ const Footer = () => {
   );
 };
 
+// Sticky Button WhatsApp (Ancho completo en Móvil)
+const WhatsAppButton = () => (
+  <motion.a
+    href="https://wa.me/584144275777"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="fixed bottom-0 left-0 w-full z-[9999] md:hidden bg-green-600 text-white py-4 px-6 shadow-2xl flex items-center justify-center gap-3 active:bg-green-700 transition-colors"
+    initial={{ y: 100 }}
+    animate={{ y: 0 }}
+    transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
+  >
+    <MessageCircle className="w-6 h-6" />
+    <span className="font-bold text-base uppercase tracking-widest">Chat en Vivo</span>
+  </motion.a>
+);
+
 function App() {
   return (
     <>
@@ -616,6 +741,7 @@ function App() {
         <WhyUs />
         <Contact />
         <Footer />
+        <WhatsAppButton />
       </div>
     </>
   );
