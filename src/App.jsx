@@ -91,7 +91,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <div className="flex flex-col">
               <span className="text-xl font-bold text-white tracking-widest uppercase leading-none">
-                Díaz Henríquez
+                Díaz Henrique
               </span>
               <span className="text-[10px] text-gray-400 tracking-[0.2em] uppercase mt-1">
                 Escritorio Jurídico
@@ -430,7 +430,7 @@ const WhyUs = () => {
           >
             <h2 className="text-gray-400 font-bold tracking-[0.2em] uppercase text-xs mb-2">Perfil Profesional</h2>
             <h3 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight uppercase">
-              Jesús Díaz Henríquez
+              Jesús Díaz Henrique
             </h3>
             <p className="text-gray-300 mb-8 leading-relaxed text-lg font-light">
               Dedicación exclusiva y gestión personal. Entendemos la importancia de cada documento. Sin intermediarios innecesarios, sin demoras injustificadas.
@@ -581,7 +581,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0 text-center md:text-left">
             <span className="text-xl font-bold text-white tracking-widest uppercase block">
-              Díaz Henríquez
+              Díaz Henrique
             </span>
             <span className="text-xs text-gray-500 uppercase tracking-[0.2em] mt-1 block">
               Escritorio Jurídico
